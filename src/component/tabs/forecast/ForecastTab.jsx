@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formContainer: {
-    padding: theme.spacing(1)
+    padding: theme.spacing(2)
   },
   formTextField: {
     marginRight: theme.spacing(1)
@@ -92,7 +92,8 @@ const ForecastTab = ({ locations }) => {
           {/* <MenuItem value={0}>
             <em>None</em>
           </MenuItem> */}
-          <MenuItem value={60}>4 weeks</MenuItem>
+          <MenuItem value={60}>4 weeks
+          </MenuItem>
         </Select>
       </FormControl>
 

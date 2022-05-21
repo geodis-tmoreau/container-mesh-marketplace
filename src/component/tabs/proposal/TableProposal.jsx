@@ -7,10 +7,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, Snackbar } from "@material-ui/core";
+import MuiAlert from '@material-ui/lab/Alert';
 import moment from "moment";
 import kuzzleService from 'services/kuzzle/kuzzle.service';
-import { useTheme } from '@material-ui/styles';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const useStyles = makeStyles({
   table: {
@@ -20,8 +24,7 @@ const useStyles = makeStyles({
 
 const Row = ({ replenishment, locations, price, quantity, onPriceChange, onQuantityChange }) => {
   const classes = useStyles();
-    console.log(replenishment)
-    const disabled = replenishment._id !== "msc-20p-rotterdam-week-4"
+  const disabled = replenishment._id !== "msc-20p-rotterdam-week-4"
 
   return (
     <TableRow key={replenishment._id}>
@@ -59,9 +62,9 @@ const Row = ({ replenishment, locations, price, quantity, onPriceChange, onQuant
 
 
 const TableProposal = ({ replenishments=[], locations =[] }) => {
-    const theme = useTheme();
   const classes = useStyles();
   const [proposals, setProposals] = useState([])
+const [open, setOpen] = useState(false);
 
   const onQuantityChange = (replishmentId) => (quantity) => {
     const proposal = proposals.find(p=> p.id === replishmentId);
@@ -98,11 +101,16 @@ const TableProposal = ({ replenishments=[], locations =[] }) => {
           alert("Price cannot be null");
       }else {
           kuzzleService.putProposal(proposals[0]?.quantity, proposals[0]?.price)
+          setProposals([])
+          setOpen(true);
+          setTimeout(() => {
+              setOpen(false);
+          }, 3000);
       }
   }
 
-  return (
-    <TableContainer component={Paper} style={{    marginTop: "-5px"}}>
+  return (<Paper  style={{    marginTop: "-5px"}}>
+    <TableContainer>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -127,13 +135,28 @@ const TableProposal = ({ replenishments=[], locations =[] }) => {
             onQuantityChange={onQuantityChange(replishment._id)} />)})}
         </TableBody>
       </Table>
-        <div style={{display: "flex", justifyContent: "flex-end"}}>
-            <Button variant="contained" color="primary" style={{margin: "1rem"}} disabled={replenishments.length === 0}
-            onClick={onSubmit}>
-                Submit
-            </Button>
-        </div>
     </TableContainer>
+    
+    <div style={{display: "flex", justifyContent: "flex-end"}}>
+    <Button variant="contained" color="primary" style={{margin: "1rem"}} 
+    disabled={replenishments.length === 0 || proposals.length === 0}
+    onClick={onSubmit}>
+        Submit
+    </Button>
+    </div>
+    <Snackbar
+      open={open}
+      autoHideDuration={6000}
+      // onClose={handleClose}
+      message=""
+      // action={action}
+      severity="success"
+    >
+       <Alert severity="success" sx={{ width: '100%' }}>
+       Proposal sent to MSC
+         </Alert>
+      </Snackbar>
+  </Paper>
   );
 }
 

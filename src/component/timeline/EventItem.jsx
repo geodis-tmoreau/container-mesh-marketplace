@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EventIcon = ({ event }) => {
-  switch (event.eventCode) {
+  switch (event.eventTypeIndicator) {
     case "BUILD UP":
       return <WidgetsIcon />;
     case "DEPARTURE":

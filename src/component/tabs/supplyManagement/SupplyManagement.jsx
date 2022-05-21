@@ -5,6 +5,7 @@ import ReactJson from 'react-json-view'
 import Timeline from "component/timeline/Timeline";
 import kuzzle from "services/kuzzle";
 import kuzzleService from "services/kuzzle/kuzzle.service";
+import moment from 'moment';
 
 const drawerWidth = 240;
 
@@ -60,6 +61,15 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
   const accepted = replenishments.filter(replenishment => replenishment._source.status === "CONFIRMED" && !replenishment._source.proposal.deliveryDate)
   const proposal = replenishments.filter(replenishment => replenishment._source.status === "CONFIRMED" && replenishment._source.proposal.deliveryDate)
 
+  const eventGroups = [{
+    departure: {
+      date: Date.parse('01 Jan 1970 00:00:01 GMT')
+    },
+    arrival: {
+      date: Date.parse('31 Dec 2025 23:59:59 GMT')
+    },
+  }]
+
   return (
     <Grid container spacing={3}>
       <Grid item xs>
@@ -93,7 +103,7 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
           <Typography variant="h4">Track & Trace</Typography>
           <Paper className={classes.drawerPaper}>
             <ReactJson theme="monokai" collapsed src={events} />
-            <Timeline groups={[]} events={[]} />
+            <Timeline groups={eventGroups} events={[]} />
             <Button variant="contained" color="secondary" onClick={() => setTrackedReplenishment(null)}>
               Close
             </Button>
@@ -126,7 +136,7 @@ const SupplyManagementReplenishmentForecasted = ({ replenishment }) => {
     </AccordionSummary>
     <AccordionDetails>
       <TextField label="Quantity" variant="outlined" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-      <Button color="primary" variant="contained" onClick={updateReplinishment} endIcon={<Icon>send</Icon>}>Validate</Button>
+      <Button color="primary" variant="contained" onClick={updateReplinishment} >Validate</Button>
     </AccordionDetails>
   </Accordion>
 }
@@ -169,11 +179,10 @@ const SupplyManagementReplenishmentProposal = ({ replenishment }) => {
     <AccordionSummary
       expandIcon={<ExpandMoreIcon />}
     >
-      <Typography className={classes.heading}>{replenishment._source.proposal.provider} proposes {replenishment._source.proposal.quantity} out of {replenishment._source.quantity} {replenishment._source.containerSubType} {replenishment._source.containerType} </Typography>
+      <Typography className={classes.heading}>{replenishment._source.proposal.provider} proposes {replenishment._source.proposal.quantity} out of {replenishment._source.quantity} {replenishment._source.containerSubType} {replenishment._source.containerType} for {replenishment._source.proposal.price}$ in {moment(replenishment._source.proposal.deliveryDate.proposed).fromNow()} ({moment(replenishment._source.proposal.deliveryDate.proposed).toISOString()})</Typography>
     </AccordionSummary>
     <AccordionDetails>
-
-      <ReactJson src={replenishment._source.proposal} theme="monokai"/>
+      <Button color="primary" variant="contained" onClick={() => kuzzleService.acceptProposal(replenishment._id)}>Accept the proposal ({replenishment._source.proposal.price}$)</Button>
     </AccordionDetails>
   </Accordion>
 }

@@ -28,18 +28,18 @@ class KuzzleService {
   getEvents() {
     return kuzzle.document.search(
       this.index,
-      'events',
+      "events",
       {
-        sort: { 'event.eventCreatedDateTime': 'asc' }
+        sort: { "event.eventCreatedDateTime": "asc" }
       });
   }
 
   getJitEvents() {
     return kuzzle.document.search(
       this.index,
-      'jit-events',
+      "jit-events",
       {
-        sort: { 'eventCreatedDateTime': 'asc' }
+        sort: { "eventCreatedDateTime": "asc" }
       });
     }
 
@@ -53,6 +53,29 @@ class KuzzleService {
         provider: "CMA-CGM",
         quantity,
         status: "PROPOSAL"
+      },
+    })
+  }
+
+  /**
+   * For demo purpose, a replenishment has only one proposal, in real life you'd have many proposals, so you'd accept one specifically in this case
+   * or multiples...
+   * 
+   * @param {string} replenishment Accept the only replensihment proposal
+   * @returns 
+   */
+  acceptProposal(replenishment) {
+    return kuzzle.document.update(this.index, "replenishments", replenishment, {
+      proposal: {
+        /* There is actually 4 status, but for tiing purposes, we'll jump directly to the last status, which is COMPLETED
+        * - PROPOSAL
+        * - ACCEPTED
+        * - STARTED
+        * - COMPLETED
+        * 
+        * We'll pre-recorded events.
+        */
+        status: "COMPLETED"
       },
     })
   }

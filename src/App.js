@@ -30,7 +30,6 @@ function App() {
   const [kuzzleIndex, setKuzzleIndex] = useLocalStorage('kuzzleIndex', 'tenant-sdl-geodis1');
 
   const [tabIndex, setTabIndex] = useState("1");
-  const [kuzzleConnectionEstablished, setKuzzleConnectionEstablished] = useState(false);
   const [locations, setLocations] = useState([])
   const [replenishments, setReplenishments] = useState([])
   const [events, setEvents] = useState([])
@@ -75,9 +74,9 @@ function App() {
       subscribeForCollection("locations", locations, setLocations)
       subscribeForCollection("replenishments", replenishments, setReplenishments)
       subscribeForCollection("events", events, setEvents)
-      subscribeForCollection("jitEvents", jitEvents, setJitEvents)
+      subscribeForCollection("jit-events", jitEvents, setJitEvents)
+      console.log(resultEvents.hits)
 
-      setKuzzleConnectionEstablished(true)
       setLocations(resultLocations.hits);
       setReplenishments(resultReplenishments.hits);
       setEvents(resultEvents.hits);
@@ -97,7 +96,7 @@ function App() {
           // type: prefersDarkMode ? "dark" : "light",
           type: "dark",
           primary: {
-            main: "#cad"
+            main: "#82c7a5"
           },
           secondary: {
             main: "#f15e22"
@@ -132,12 +131,14 @@ function App() {
   const classes = makeStyles();
 
   const onPlayStep = () => {
+    setStepIndex(stepIndex + 1);
     kuzzleService.playStep(stepIndex + 1);
   }
 
   const onResetStep = () => {
     setStepIndex(1)
     kuzzleService.reset()
+    setTabIndex("1");
   }
 
   const onActorChange = (e) => {

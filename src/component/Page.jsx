@@ -70,7 +70,7 @@ const Page = ({ title, kuzzleIndex, setKuzzleIndex, actor, onActorChange, childr
           </span>
           <span>
             <Button 
-            onClick={onResetStep} className={classes.playButton} variant="contained" color="secondary">Reset to step 1</Button>
+            onClick={onResetStep} className={classes.playButton} variant="outlined" color="secondary">Reset to step 1</Button>
             <Button disabled={stepIndex>maxStepIndex} 
             onClick={onPlayStep} className={classes.playButton} variant="contained" color="primary">PLAY STEP</Button>
             {stepIndex<maxStepIndex && `Next: ${steps[stepIndex].name}`}
