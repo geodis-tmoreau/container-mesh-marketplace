@@ -63,6 +63,7 @@ const Page = ({
     stepIndex,
     onPlayStep,
     onResetStep,
+    sessions,
     ...props
 }) => {
     const classes = useStyles();
@@ -94,19 +95,19 @@ const Page = ({
                             variant="outlined"
                             color="secondary"
                         >
-                            Reset to step 1
+                            Start with step 1
                         </Button>
-                        <Button
-                            disabled={stepIndex >= maxStepIndex}
+                        { stepIndex !== 0 ? <Button
+                            disabled={stepIndex + 1 > maxStepIndex}
                             onClick={onPlayStep}
                             className={classes.playButton}
                             variant="contained"
                             color="primary"
                         >
-                            PLAY STEP
-                        </Button>
-                        {stepIndex < maxStepIndex &&
-                            `Next: ${steps[stepIndex].name}`}
+                            PLAY STEP {stepIndex + 1}
+                        </Button> : ''}
+                        {stepIndex + 1 <= maxStepIndex &&
+                            `Next: ${steps[stepIndex + 1].name}`}
                     </span>
                     <span>
                         <Select
@@ -124,11 +125,11 @@ const Page = ({
                             label="Kuzzle index"
                             onChange={(e) => setKuzzleIndex(e.target.value)}
                         >
-                            {new Array(5).fill(0).map((v, index) => (
+                            {sessions.map((session) => (
                                 <MenuItem
-                                    value={`tenant-sdl-geodis${index + 1}`}
+                                    value={`tenant-sdl-${session}`}
                                 >
-                                    tenant-sdl-geodis{index + 1}
+                                    {session}
                                 </MenuItem>
                             ))}
                         </Select>

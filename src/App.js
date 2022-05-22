@@ -17,255 +17,262 @@ import ProposalTab from "component/tabs/proposal/ProposalTab";
 import ReplenishmentsContext from "contexts/ReplenishmentsContext";
 
 function App() {
-    const [kuzzleIndex, setKuzzleIndex] = useLocalStorage(
-        "kuzzleIndex",
-        "tenant-sdl-geodis1"
-    );
+  const [kuzzleIndex, setKuzzleIndex] = useLocalStorage(
+    "kuzzleIndex",
+    "tenant-sdl-geodis1"
+  );
 
-    const [tabIndex, setTabIndex] = useState("1");
-    const [locations, setLocations] = useState([]);
-    const [sessions, setSessions] = useState([]);
-    const [replenishments, setReplenishments] = useState([]);
-    const [events, setEvents] = useState([]);
-    const [jitEvents, setJitEvents] = useState([]);
-    const [stepIndex /* what are you doing stepIndex ??*/, setStepIndex] =
-        useState(1);
-    const [actor, setActor] = useState(actors[0]);
+  const [tabIndex, setTabIndex] = useState("1");
+  const [locations, setLocations] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [replenishments, setReplenishments] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [jitEvents, setJitEvents] = useState([]);
+  const [stepIndex /* what are you doing stepIndex ??*/, setStepIndex] =
+    useState(0);
+  const [actor, setActor] = useState(actors[0]);
 
-    /**
-     *
-     * @param {string} collection
-     * @param {Array<Object>} target
-     * @returns
-     */
-    const subscribeForCollection = (collection, target, setTarget) => {
-        kuzzle.realtime.subscribe(
-            kuzzleService.index,
-            collection,
-            {},
-            (notification) => {
-                console.log("Received notification", notification);
-                if (notification.type !== "document") return;
-                const elemIndex = target.findIndex(
-                    (o) => o._id === notification.result._id
-                );
-                if (notification.scope === "in") {
-                    if (elemIndex !== -1) {
-                        target[elemIndex] = notification.result;
-                        setTarget([...target]);
-                    } else {
-                        target.push(notification.result);
-                        setTarget([...target]);
-                    }
-                } else {
-                    target.splice(elemIndex, 1);
-                    setTarget([...target]);
-                }
-            }
+  /**
+   *
+   * @param {string} collection
+   * @param {Array<Object>} target
+   * @returns
+   */
+  const subscribeForCollection = (collection, target, setTarget) => {
+    kuzzle.realtime.subscribe(
+      kuzzleService.index,
+      collection,
+      {},
+      (notification) => {
+        console.log("Received notification", notification);
+        if (notification.type !== "document") return;
+        const elemIndex = target.findIndex(
+          (o) => o._id === notification.result._id
         );
-    };
-
-    useEffect(() => {
-        async function init() {
-            await kuzzleService.init(kuzzleIndex);
-
-            const availableSessions = await kuzzleService.getSessions();
-            setSessions(availableSessions);
-
-            const resultLocations = await kuzzleService.getLocations();
-            const resultReplenishments =
-                await kuzzleService.getReplenishments();
-            const resultEvents = await kuzzleService.getEvents();
-            const resultJitEvents = await kuzzleService.getJitEvents();
-
-            subscribeForCollection("locations", locations, setLocations);
-            subscribeForCollection(
-                "replenishments",
-                replenishments,
-                setReplenishments
-            );
-            subscribeForCollection("events", events, setEvents);
-            subscribeForCollection("jit-events", jitEvents, setJitEvents);
-
-            setLocations(resultLocations.hits);
-            setReplenishments(resultReplenishments.hits);
-            setEvents(resultEvents.hits);
-            setJitEvents(resultJitEvents.hits);
-            setStepIndex(1);
+        if (notification.scope === "in") {
+          if (elemIndex !== -1) {
+            target[elemIndex] = notification.result;
+            setTarget([...target]);
+          } else {
+            target.push(notification.result);
+            setTarget([...target]);
+          }
+        } else {
+          target.splice(elemIndex, 1);
+          setTarget([...target]);
         }
-        init();
-        return () => kuzzle.disconnect();
-    }, [kuzzleIndex]);
-
-    const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
-    const theme = useMemo(() =>
-        createTheme({
-            palette: {
-                // type: prefersDarkMode ? "dark" : "light",
-                type: "dark",
-                primary: {
-                    main: "#82c7a5",
-                },
-                secondary: {
-                    main: "#f15e22",
-                },
-                background: {
-                    default: "#1b212c",
-                },
-            },
-            typography: {
-                h6: {
-                    color: "#d9ead3",
-                },
-            },
-            overrides: {
-                MuiAppBar: {
-                    root: {
-                        borderBottom: "1px solid #d9ead3",
-                    },
-                },
-                MuiTab: {
-                    textColorInherit: {
-                        "&$selected": {
-                            color: "#d9ead3",
-                        },
-                    },
-                },
-            },
-        })
+      }
     );
+  };
 
-    useEffect(() => {
-        async function init() {
-            await kuzzleService.init(kuzzleIndex);
-            const availableSessions = await kuzzleService.getSessions();
-            setSessions(availableSessions);
+  useEffect(() => {
+    async function init() {
+      await kuzzleService.init(kuzzleIndex);
 
-            const resultLocations = await kuzzleService.getLocations();
-            const resultReplenishments =
-                await kuzzleService.getReplenishments();
-            const resultEvents = await kuzzleService.getEvents();
-            const resultJitEvents = await kuzzleService.getJitEvents();
+      const availableSessions = await kuzzleService.getSessions();
+      setSessions(availableSessions);
 
-            subscribeForCollection("locations", locations, setLocations);
-            subscribeForCollection(
-                "replenishments",
-                replenishments,
-                setReplenishments
-            );
-            subscribeForCollection("events", events, setEvents);
-            subscribeForCollection("jit-events", jitEvents, setJitEvents);
+      const resultLocations = await kuzzleService.getLocations();
+      const resultReplenishments =
+        await kuzzleService.getReplenishments();
+      const resultEvents = await kuzzleService.getEvents();
+      const resultJitEvents = await kuzzleService.getJitEvents();
 
-            setLocations(resultLocations.hits);
-            setReplenishments(resultReplenishments.hits);
-            setEvents(resultEvents.hits);
-            setJitEvents(resultJitEvents.hits);
+      subscribeForCollection("locations", locations, setLocations);
+      subscribeForCollection(
+        "replenishments",
+        replenishments,
+        setReplenishments
+      );
+      subscribeForCollection("events", events, setEvents);
+      subscribeForCollection("jit-events", jitEvents, setJitEvents);
 
-            await kuzzleService.init(kuzzleIndex);
-            setStepIndex(1);
-        }
-        init();
-    }, []);
+      setLocations(resultLocations.hits);
+      setReplenishments(resultReplenishments.hits);
+      setEvents(resultEvents.hits);
+      setJitEvents(resultJitEvents.hits);
+      setStepIndex(0);
+    }
+    init();
+    return () => kuzzle.disconnect();
+  }, [kuzzleIndex]);
 
-    const classes = makeStyles();
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-    const onPlayStep = async () => {
-        await kuzzleService.playStep(stepIndex + 1);
+  const theme = useMemo(() =>
+    createTheme({
+      palette: {
+        // type: prefersDarkMode ? "dark" : "light",
+        type: "dark",
+        primary: {
+          main: "#82c7a5",
+        },
+        secondary: {
+          main: "#f15e22",
+        },
+        background: {
+          default: "#1b212c",
+        },
+      },
+      typography: {
+        h6: {
+          color: "#d9ead3",
+        },
+      },
+      overrides: {
+        MuiAppBar: {
+          root: {
+            borderBottom: "1px solid #d9ead3",
+          },
+        },
+        MuiTab: {
+          textColorInherit: {
+            "&$selected": {
+              color: "#d9ead3",
+            },
+          },
+        },
+      },
+    })
+  );
+
+  useEffect(() => {
+    async function init() {
+      await kuzzleService.init(kuzzleIndex);
+      const availableSessions = await kuzzleService.getSessions();
+      setSessions(availableSessions);
+
+      const resultLocations = await kuzzleService.getLocations();
+      const resultReplenishments =
+        await kuzzleService.getReplenishments();
+      const resultEvents = await kuzzleService.getEvents();
+      const resultJitEvents = await kuzzleService.getJitEvents();
+
+      subscribeForCollection("locations", locations, setLocations);
+      subscribeForCollection(
+        "replenishments",
+        replenishments,
+        setReplenishments
+      );
+      subscribeForCollection("events", events, setEvents);
+      subscribeForCollection("jit-events", jitEvents, setJitEvents);
+
+      setLocations(resultLocations.hits);
+      setReplenishments(resultReplenishments.hits);
+      setEvents(resultEvents.hits);
+      setJitEvents(resultJitEvents.hits);
+
+      await kuzzleService.init(kuzzleIndex);
+      setStepIndex(0);
+    }
+    init();
+  }, []);
+
+  const classes = makeStyles();
+
+  const onPlayStep = () => {
+    console.log({stepIndex})
+    kuzzleService.playStep(stepIndex + 1)
+      .then(() => {
         setStepIndex(stepIndex + 1);
-    };
+      })
+      .catch(console.error)
+  };
 
-    const onResetStep = async () => {
-        await kuzzleService.reset();
+  const onResetStep = () => {
+    kuzzleService.reset()
+      .then(() => {
         setStepIndex(1);
         setTabIndex("1");
-    };
+      })
+      .catch(console.error)
+  };
 
-    const onActorChange = (e) => {
-        setActor(actors.find((a) => a.id === e.target.value));
-        setTabIndex("1");
-    };
+  const onActorChange = (e) => {
+    setActor(actors.find((a) => a.id === e.target.value));
+    setTabIndex("1");
+  };
 
-    return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <ReplenishmentsContext.Provider value={replenishments}>
-                <Router>
-                    <Page
-                        title="ContainerMesh"
-                        sessions={sessions}
-                        kuzzleIndex={kuzzleIndex}
-                        setKuzzleIndex={setKuzzleIndex}
-                        stepIndex={stepIndex}
-                        onPlayStep={onPlayStep}
-                        onResetStep={onResetStep}
-                        actor={actor}
-                        onActorChange={onActorChange}
-                    >
-                        {actor.type === STOCK_MANAGER ? (
-                            <TabContext value={tabIndex}>
-                                <Paper square className={classes.root}>
-                                    <TabList
-                                        value={tabIndex}
-                                        onChange={(event, newValue) =>
-                                            setTabIndex(newValue)
-                                        }
-                                    >
-                                        <Tab label="Forecast" value="1" />
-                                        <Tab
-                                            label={
-                                                <Badge
-                                                    badgeContent={
-                                                        replenishments.length
-                                                    }
-                                                    color="error"
-                                                >
-                                                    Supply Management
-                                                </Badge>
-                                            }
-                                            value="2"
-                                        />
-                                    </TabList>
-                                </Paper>
-                                <TabPanel value="1">
-                                    <ForecastTab
-                                        locations={locations}
-                                        stepIndex={stepIndex}
-                                    />
-                                </TabPanel>
-                                <TabPanel value="2">
-                                    <SupplyManagement
-                                        locations={locations}
-                                        replenishments={replenishments}
-                                        events={[...events, ...jitEvents]}
-                                    />
-                                </TabPanel>
-                            </TabContext>
-                        ) : (
-                            <TabContext value={tabIndex}>
-                                <Paper square className={classes.root}>
-                                    <TabList
-                                        value={tabIndex}
-                                        onChange={(event, newValue) =>
-                                            setTabIndex(newValue)
-                                        }
-                                    >
-                                        <Tab
-                                            label="Propose transports"
-                                            value="1"
-                                        />
-                                    </TabList>
-                                </Paper>
-                                <TabPanel value="1">
-                                    <ProposalTab />
-                                </TabPanel>
-                            </TabContext>
-                        )}
-                    </Page>
-                </Router>
-            </ReplenishmentsContext.Provider>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ReplenishmentsContext.Provider value={replenishments}>
+        <Router>
+          <Page
+            title="ContainerMesh"
+            sessions={sessions}
+            kuzzleIndex={kuzzleIndex}
+            setKuzzleIndex={setKuzzleIndex}
+            stepIndex={stepIndex}
+            onPlayStep={onPlayStep}
+            onResetStep={onResetStep}
+            actor={actor}
+            onActorChange={onActorChange}
+          >
+            {actor.type === STOCK_MANAGER ? (
+              <TabContext value={tabIndex}>
+                <Paper square className={classes.root}>
+                  <TabList
+                    value={tabIndex}
+                    onChange={(event, newValue) =>
+                      setTabIndex(newValue)
+                    }
+                  >
+                    <Tab label="Forecast" value="1" />
+                    <Tab
+                      label={
+                        <Badge
+                          badgeContent={
+                            replenishments.length
+                          }
+                          color="error"
+                        >
+                          Supply Management
+                        </Badge>
+                      }
+                      value="2"
+                    />
+                  </TabList>
+                </Paper>
+                <TabPanel value="1">
+                  <ForecastTab
+                    locations={locations}
+                    stepIndex={stepIndex}
+                  />
+                </TabPanel>
+                <TabPanel value="2">
+                  <SupplyManagement
+                    locations={locations}
+                    replenishments={replenishments}
+                    events={[...events, ...jitEvents]}
+                  />
+                </TabPanel>
+              </TabContext>
+            ) : (
+              <TabContext value={tabIndex}>
+                <Paper square className={classes.root}>
+                  <TabList
+                    value={tabIndex}
+                    onChange={(event, newValue) =>
+                      setTabIndex(newValue)
+                    }
+                  >
+                    <Tab
+                      label="Propose transports"
+                      value="1"
+                    />
+                  </TabList>
+                </Paper>
+                <TabPanel value="1">
+                  <ProposalTab />
+                </TabPanel>
+              </TabContext>
+            )}
+          </Page>
+        </Router>
+      </ReplenishmentsContext.Provider>
+    </ThemeProvider>
+  );
 }
 
 export default App;

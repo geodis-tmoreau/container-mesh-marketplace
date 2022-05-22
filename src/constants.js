@@ -11,6 +11,7 @@ export const actors = [
 export const locations = [{ id: "", label: "" }];
 
 export const steps = [
+    { name: "Initial State", date: moment("2022-01-08T00:00:00") },
     { name: "USLAX overstocked", date: moment("2022-01-08T00:00:00") },
     {
         name: "NLRTM understocked",
