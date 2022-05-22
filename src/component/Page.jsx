@@ -102,8 +102,8 @@ const Page = ({
                         >
                             Start with step 1
                         </Button>
-                        { stepIndex !== 0 ? <Button
-                            disabled={stepIndex + 1 === 3 && ! canPlayStep3}
+                        {stepIndex !== 0 ? <Button
+                            disabled={stepIndex + 1 === 3 && !canPlayStep3}
                             onClick={onPlayStep}
                             className={classes.playButton}
                             variant="contained"
@@ -131,21 +131,23 @@ const Page = ({
                         <FormControl className={classes.formControl}>
                             <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
                             <Select
-                            value={currentSession}
-                            label="Kuzzle index"
-                            onChange={(e) => {
-                                startSession(e.target.value)
-                                setKuzzleIndex(`tenant-sdl-${e.target.value}`)
-                            }}
-                        >
-                            {sessions.map((session) => (
-                                <MenuItem
-                                    value={session}
-                                >
-                                    {session}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                                value={currentSession}
+                                label="Kuzzle index"
+                                onChange={(e) => {
+                                    startSession(e.target.value)
+                                    setKuzzleIndex(`tenant-sdl-${e.target.value}`)
+                                }}
+                                style={{ minWidth: '10rem' }}
+                                fullWidth
+                            >
+                                {sessions.map((session) => (
+                                    <MenuItem
+                                        value={session}
+                                    >
+                                        {session}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </FormControl>
                     </span>
                 </Toolbar>
