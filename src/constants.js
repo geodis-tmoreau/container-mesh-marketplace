@@ -4,8 +4,8 @@ export const STOCK_MANAGER = "stockManager";
 export const TRANSPORTER = "transporter";
 
 export const actors = [
-    { id: "msc", label: "MSC", type: STOCK_MANAGER },
-    { id: "cmacgm", label: "CMA-CGM", type: TRANSPORTER },
+    { id: "msc", label: "MSC - Stock Manager", type: STOCK_MANAGER },
+    { id: "cmacgm", label: "CMA-CGM - Carrier", type: TRANSPORTER },
 ];
 
 export const locations = [{ id: "", label: "" }];
