@@ -69,41 +69,6 @@ function App() {
     );
   };
 
-  // useEffect(() => {
-  //   async function init() {
-  //     await kuzzleService.init(kuzzleIndex);
-
-
-  //     const availableSessions = await kuzzleService.getSessions();
-  //     setSessions(availableSessions);
-
-  //     const resultLocations = await kuzzleService.getLocations();
-  //     const resultReplenishments =
-  //       await kuzzleService.getReplenishments();
-  //     const resultEvents = await kuzzleService.getEvents();
-  //     const resultJitEvents = await kuzzleService.getJitEvents();
-
-  //     subscribeForCollection("locations", locations, setLocations);
-  //     subscribeForCollection(
-  //       "replenishments",
-  //       replenishments,
-  //       setReplenishments
-  //     );
-  //     subscribeForCollection("events", events, setEvents);
-  //     subscribeForCollection("jit-events", jitEvents, setJitEvents);
-
-  //     setLocations(resultLocations.hits);
-  //     setReplenishments(resultReplenishments.hits);
-  //     setEvents(resultEvents.hits);
-  //     setJitEvents(resultJitEvents.hits);
-  //     setStepIndex(0);
-  //   }
-  //   init();
-  //   return () => kuzzle.disconnect();
-  // }, [kuzzleIndex]);
-
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
   const theme = useMemo(() =>
     createTheme({
       palette: {
@@ -174,6 +139,7 @@ function App() {
 
       const session = await kuzzleService.getCurrentSession();
       let selectedSession = session || availableSessions[0];
+      console.log({selectedSession})
       setCurrentSession(selectedSession);
 
       await kuzzle.realtime.subscribe(
@@ -239,7 +205,7 @@ function App() {
                     <Page
                         title="ContainerMesh"
                         canPlayStep3={canPlayStep3}
-                        sessions={sessions}
+                        sessions={[currentSession, ...sessions]}
                         kuzzleIndex={kuzzleIndex}
                         setKuzzleIndex={setKuzzleIndex}
                         stepIndex={stepIndex}

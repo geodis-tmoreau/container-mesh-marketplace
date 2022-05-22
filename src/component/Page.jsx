@@ -131,7 +131,7 @@ const Page = ({
                         <FormControl className={classes.formControl}>
                             <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
                             <Select
-                            value={kuzzleIndex}
+                            value={currentSession}
                             label="Kuzzle index"
                             onChange={(e) => {
                                 startSession(e.target.value)
@@ -141,7 +141,6 @@ const Page = ({
                             {sessions.map((session) => (
                                 <MenuItem
                                     value={session}
-                                    selected={session === currentSession}
                                 >
                                     {session}
                                 </MenuItem>
