@@ -228,6 +228,7 @@ function App() {
                                 </TabPanel>
                                 <TabPanel value="2">
                                     <SupplyManagement
+                                        locations={locations}
                                         replenishments={replenishments}
                                         events={[...events, ...jitEvents]}
                                     />

@@ -224,14 +224,14 @@ const SupplyManagement = ({
             <Grid item xs>
                 <div className={classes.root}>
                     <Typography variant="h4">
-                        Forecasted ({forcasted?.length || 0}) TODO :: Afficher
-                        date et lieu
+                        Forecasted ({forcasted?.length || 0})
                     </Typography>
                     <Box>
                         {forcasted.map((replenishment) => (
                             <SupplyManagementReplenishmentForecasted
                                 key={replenishment._id}
                                 replenishment={replenishment}
+                                locations={locations}
                             />
                         ))}
                     </Box>
@@ -274,12 +274,19 @@ const SupplyManagement = ({
     );
 };
 
-const SupplyManagementReplenishmentForecasted = ({ replenishment }) => {
+const SupplyManagementReplenishmentForecasted = ({
+    replenishment,
+    locations,
+}) => {
     const [quantity, setQuantity] = useState(replenishment._source.quantity);
 
     const updateReplinishment = () => {
         kuzzleService.acceptForecastedReplenishment(replenishment, quantity);
     };
+
+    const location = locations.find(
+        (loc) => loc._id === replenishment._source.location
+    );
 
     return (
         <ListItem
@@ -293,13 +300,23 @@ const SupplyManagementReplenishmentForecasted = ({ replenishment }) => {
         >
             <div style={{ display: "flex", alignContent: "center" }}>
                 <Typography>
-                    The system forcasted that you'll be in need of
-                </Typography>
-                <Typography style={{ fontWeight: "bold" }}>
-                    &nbsp;{replenishment._source.quantity} "
+                    The system forcasted that you'll be in need of &nbsp;
+                    {replenishment._source.quantity} "
                     {replenishment._source.containerSubType} containers"
+                    {!!location
+                        ? " in " + location._source.lo.locationName
+                        : ""}
+                    &nbsp;for&nbsp;{" "}
+                    {moment("2022-01-01")
+                        .add(
+                            replenishment._source.requestedDate
+                                .split("-")
+                                .at(-1),
+                            "week"
+                        )
+                        .format("L")}
+                    .
                 </Typography>
-                .
                 <Typography style={{ textAlign: "right" }}>
                     ({replenishment._id})
                 </Typography>
@@ -329,6 +346,10 @@ const SupplyManagementReplenishmentAccepted = ({
     onTntClick,
 }) => {
     const classes = useStyles();
+    const location = locations.find(
+        (loc) => loc._id === replenishment._source.location
+    );
+    console.log(locations, location, replenishment._source.location);
     return (
         <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -336,11 +357,18 @@ const SupplyManagementReplenishmentAccepted = ({
                     The system forcasted that you'll be in need of{" "}
                     {replenishment._source.quantity}{" "}
                     {replenishment._source.containerSubType}{" "}
-                    {
-                        locations.find(
-                            (loc) => loc._id === replenishment._source.location
-                        )?._source.locationName
-                    }
+                    {!!location
+                        ? " in " + location._source.lo.locationName
+                        : ""}
+                    &nbsp;for&nbsp;{" "}
+                    {moment("2022-01-01")
+                        .add(
+                            replenishment._source.requestedDate
+                                .split("-")
+                                .at(-1),
+                            "week"
+                        )
+                        .format("L")}
                 </Typography>
                 {/* <Typography className={classes.secondaryHeading}>
                     {replenishment._source.containerSubType}
