@@ -156,7 +156,10 @@ const AvailabilityTable = ({}) => {
                     <Button
                         color="secondary"
                         size="small"
-                        onClick={() => setOpen(false)}
+                        onClick={() => {
+                            setDetailsOpen(false);
+                            setOpen(false);
+                        }}
                     >
                         Close
                     </Button>

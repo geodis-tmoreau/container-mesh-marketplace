@@ -7,6 +7,8 @@ import {
     Button,
     Select,
     MenuItem,
+    FormControl,
+    InputLabel,
 } from "@material-ui/core";
 import useLocalStorage from "hooks/useLocalStorage";
 import { useState } from "react";
@@ -63,6 +65,10 @@ const Page = ({
     stepIndex,
     onPlayStep,
     onResetStep,
+    sessions,
+    canPlayStep3,
+    currentSession,
+    startSession,
     ...props
 }) => {
     const classes = useStyles();
@@ -94,44 +100,53 @@ const Page = ({
                             variant="outlined"
                             color="secondary"
                         >
-                            Reset to step 1
+                            Start with step 1
                         </Button>
-                        <Button
-                            disabled={stepIndex >= maxStepIndex}
+                        { stepIndex !== 0 ? <Button
+                            disabled={stepIndex + 1 === 3 && ! canPlayStep3}
                             onClick={onPlayStep}
                             className={classes.playButton}
                             variant="contained"
                             color="primary"
                         >
-                            PLAY STEP
-                        </Button>
-                        {stepIndex < maxStepIndex &&
-                            `Next: ${steps[stepIndex].name}`}
+                            PLAY STEP {stepIndex + 1}
+                        </Button> : ''}
+                        {stepIndex + 1 <= maxStepIndex &&
+                            `Next: ${steps[stepIndex + 1].name}`}
                     </span>
                     <span>
-                        <Select
-                            value={actor.id}
-                            style={{ marginRight: "1rem" }}
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="actor-label">User</InputLabel>
+                            <Select
+                                value={actor.id}
+                                style={{ marginRight: "1rem" }}
+                                label="Kuzzle index"
+                                onChange={onActorChange}
+                            >
+                                {actors.map((v) => (
+                                    <MenuItem value={v.id}>{v.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
+                            <Select
+                            value={currentSession}
                             label="Kuzzle index"
-                            onChange={onActorChange}
+                            onChange={(e) => {
+                                startSession(e.target.value)
+                                setKuzzleIndex(`tenant-sdl-${e.target.value}`)
+                            }}
                         >
-                            {actors.map((v) => (
-                                <MenuItem value={v.id}>{v.label}</MenuItem>
-                            ))}
-                        </Select>
-                        <Select
-                            value={kuzzleIndex}
-                            label="Kuzzle index"
-                            onChange={(e) => setKuzzleIndex(e.target.value)}
-                        >
-                            {new Array(5).fill(0).map((v, index) => (
+                            {sessions.map((session) => (
                                 <MenuItem
-                                    value={`tenant-sdl-geodis${index + 1}`}
+                                    value={session}
                                 >
-                                    tenant-sdl-geodis{index + 1}
+                                    {session}
                                 </MenuItem>
                             ))}
                         </Select>
+                        </FormControl>
                     </span>
                 </Toolbar>
             </AppBar>

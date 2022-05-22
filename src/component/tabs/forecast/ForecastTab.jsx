@@ -136,7 +136,7 @@ const ForecastTab = ({ locations, stepIndex }) => {
                         },
                         content: l._source.lo.locationName,
                         color: locationService.getLocationColor(l, theme),
-                        textColor: theme.palette.common.black,
+                        textColor: theme.palette.text.primary,
                         radius: 20,
                         onClick: onSelectLocation(l),
                     };
