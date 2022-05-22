@@ -263,7 +263,7 @@ const SupplyManagement = ({
             />
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={() => setTrackedReplenishment(null)}
             >
               Close
@@ -349,7 +349,7 @@ const SupplyManagementReplenishmentAccepted = ({
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography className={classes.heading} variant="body1">
-          Ongoing replanishment of{" "}
+          Ongoing replenishment of{" "}
           <strong>
             {replenishment._source.quantity -
               (replenishment?._source?.proposal?.status ===
@@ -366,7 +366,7 @@ const SupplyManagementReplenishmentAccepted = ({
           <strong>
             {!!location ? location._source.lo.locationName : ""}
           </strong>{" "}
-          week{" "}
+          on week{" "}
           <strong>
             {replenishment._source.requestedDate.split("-").at(-1)}
           </strong>

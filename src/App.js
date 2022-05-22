@@ -125,6 +125,11 @@ function App() {
         },
       },
       overrides: {
+        MuiAccordionSummary: {
+          root: {
+            color: "#d9ead3"
+          }
+        },
         MuiAppBar: {
           root: {
             borderBottom: "1px solid #d9ead3",
