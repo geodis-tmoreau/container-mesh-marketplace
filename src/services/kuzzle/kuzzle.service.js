@@ -13,8 +13,7 @@ class KuzzleService {
     };
 
     await kuzzle.connect();
-    await kuzzle.auth.login("local", credentials)
-    // await this.playStep(1)
+    // await kuzzle.auth.login("local", credentials)
   }
 
   getLocations() {
@@ -43,6 +42,15 @@ class KuzzleService {
       });
     }
 
+  async getSessions () {
+    const { result: availableSessions } = await kuzzle.query({
+      controller: 'step',
+      action: 'listSessions',
+    });
+
+    return availableSessions;
+  }
+
   putProposal(quantity, price) {
     return kuzzle.document.update(this.index, "replenishments", "msc-20p-rotterdam-week-4", {
       proposal: {
@@ -60,9 +68,9 @@ class KuzzleService {
   /**
    * For demo purpose, a replenishment has only one proposal, in real life you'd have many proposals, so you'd accept one specifically in this case
    * or multiples...
-   * 
+   *
    * @param {string} replenishment Accept the only replensihment proposal
-   * @returns 
+   * @returns
    */
   acceptProposal(replenishment) {
     return kuzzle.document.update(this.index, "replenishments", replenishment, {
@@ -72,7 +80,7 @@ class KuzzleService {
         * - ACCEPTED
         * - STARTED
         * - COMPLETED
-        * 
+        *
         * We'll pre-recorded events.
         */
         status: "COMPLETED"

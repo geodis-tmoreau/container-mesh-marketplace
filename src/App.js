@@ -31,6 +31,7 @@ function App() {
 
   const [tabIndex, setTabIndex] = useState("1");
   const [locations, setLocations] = useState([])
+  const [sessions, setSessions] = useState([])
   const [replenishments, setReplenishments] = useState([])
   const [events, setEvents] = useState([])
   const [jitEvents, setJitEvents] = useState([])
@@ -38,10 +39,10 @@ function App() {
   const [actor, setActor] = useState(actors[0]);
 
   /**
-   * 
-   * @param {string} collection 
-   * @param {Array<Object>} target 
-   * @returns 
+   *
+   * @param {string} collection
+   * @param {Array<Object>} target
+   * @returns
    */
   const subscribeForCollection = (collection, target, setTarget) => {
     kuzzle.realtime.subscribe(kuzzleService.index, collection, {}, (notification) => {
@@ -66,6 +67,10 @@ function App() {
   useEffect(() => {
     async function init() {
       await kuzzleService.init(kuzzleIndex)
+
+      const availableSessions = await kuzzleService.getSessions()
+      setSessions(availableSessions);
+
       const resultLocations = await kuzzleService.getLocations()
       const resultReplenishments = await kuzzleService.getReplenishments()
       const resultEvents = await kuzzleService.getEvents()
@@ -75,13 +80,13 @@ function App() {
       subscribeForCollection("replenishments", replenishments, setReplenishments)
       subscribeForCollection("events", events, setEvents)
       subscribeForCollection("jit-events", jitEvents, setJitEvents)
-      console.log(resultEvents.hits)
 
       setLocations(resultLocations.hits);
       setReplenishments(resultReplenishments.hits);
       setEvents(resultEvents.hits);
       setJitEvents(resultJitEvents.hits);
       setStepIndex(1);
+
     }
     init()
     return () => kuzzle.disconnect()
@@ -130,14 +135,14 @@ function App() {
 
   const classes = makeStyles();
 
-  const onPlayStep = () => {
+  const onPlayStep = async () => {
+    await kuzzleService.playStep(stepIndex + 1);
     setStepIndex(stepIndex + 1);
-    kuzzleService.playStep(stepIndex + 1);
   }
 
-  const onResetStep = () => {
+  const onResetStep = async () => {
+    await kuzzleService.reset()
     setStepIndex(1)
-    kuzzleService.reset()
     setTabIndex("1");
   }
 
@@ -152,7 +157,7 @@ function App() {
       <ReplenishmentsContext.Provider value={replenishments} >
 
         <Router>
-          <Page title="ContainerMesh" kuzzleIndex={kuzzleIndex} setKuzzleIndex={setKuzzleIndex} stepIndex={stepIndex} onPlayStep={onPlayStep} onResetStep={onResetStep}
+          <Page title="ContainerMesh" sessions={sessions} kuzzleIndex={kuzzleIndex} setKuzzleIndex={setKuzzleIndex} stepIndex={stepIndex} onPlayStep={onPlayStep} onResetStep={onResetStep}
             actor={actor} onActorChange={onActorChange}>
             {actor.type === STOCK_MANAGER ?
               (<TabContext value={tabIndex}>

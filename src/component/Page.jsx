@@ -54,10 +54,11 @@ const useStyles = makeStyles((theme) => ({
  * @returns
  */
 
-const Page = ({ title, kuzzleIndex, setKuzzleIndex, actor, onActorChange, children, stepIndex, onPlayStep, onResetStep, ...props }) => {
+const Page = ({ title, sessions, kuzzleIndex, setKuzzleIndex, actor, onActorChange, children, stepIndex, onPlayStep, onResetStep, ...props }) => {
   const classes = useStyles();
 
   const maxStepIndex = 3;
+  console.log(stepIndex)
   return (
     <>
       <AppBar color='transparent' position='static' square>
@@ -69,10 +70,12 @@ const Page = ({ title, kuzzleIndex, setKuzzleIndex, actor, onActorChange, childr
             </Typography>
           </span>
           <span>
-            <Button 
-            onClick={onResetStep} className={classes.playButton} variant="outlined" color="secondary">Reset to step 1</Button>
-            <Button disabled={stepIndex>maxStepIndex} 
-            onClick={onPlayStep} className={classes.playButton} variant="contained" color="primary">PLAY STEP</Button>
+            <Button
+            onClick={onResetStep} className={classes.playButton} variant="outlined" color="secondary">Start with step 1</Button>
+
+            <Button disabled={stepIndex > maxStepIndex}
+            onClick={onPlayStep} className={classes.playButton} variant="contained" color="primary">PLAY STEP {stepIndex+1}</Button>
+
             {stepIndex<maxStepIndex && `Next: ${steps[stepIndex].name}`}
           </span><span>
           <Select
@@ -88,7 +91,7 @@ const Page = ({ title, kuzzleIndex, setKuzzleIndex, actor, onActorChange, childr
             label="Kuzzle index"
             onChange={(e) => setKuzzleIndex(e.target.value)}
           >
-            {new Array(5).fill(0).map((v, index) => <MenuItem value={`tenant-sdl-geodis${index+1}`}>tenant-sdl-geodis{index+1}</MenuItem>)}
+            {sessions.map(session => <MenuItem value={`tenant-sdl-${session}`}>{session}</MenuItem>)}
           </Select>
           </span>
         </Toolbar>
