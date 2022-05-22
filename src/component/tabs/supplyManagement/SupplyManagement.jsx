@@ -263,7 +263,7 @@ const SupplyManagement = ({
             />
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={() => setTrackedReplenishment(null)}
             >
               Close
