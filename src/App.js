@@ -15,6 +15,7 @@ import useLocalStorage from "hooks/useLocalStorage";
 import { actors, STOCK_MANAGER } from "constants";
 import ProposalTab from "component/tabs/proposal/ProposalTab";
 import ReplenishmentsContext from "contexts/ReplenishmentsContext";
+import RentTab from "component/tabs/renting/RentTab";
 
 function App() {
     const [kuzzleIndex, setKuzzleIndex] = useLocalStorage(
@@ -254,11 +255,15 @@ function App() {
                                             label="Propose transports"
                                             value="1"
                                         />
+                                        <Tab label="Rent container" value="2" />
                                     </TabList>
                                 </Paper>
                                 <TabPanel value="1">
                                     <ProposalTab />
                                 </TabPanel>
+                                {/* <TabPanel value="2">
+                                    <RentTab />
+                                </TabPanel> */}
                             </TabContext>
                         )}
                     </Page>
