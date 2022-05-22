@@ -36,7 +36,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SupplyManagement = ({ replenishments = [], events = [] }) => {
+const SupplyManagement = ({
+    replenishments = [],
+    events = [],
+    locations = [],
+}) => {
     const classes = useStyles();
 
     const [trackedReplenishment, setTrackedReplenishment] = useState(null);
@@ -240,6 +244,7 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
                                 <SupplyManagementReplenishmentAccepted
                                     key={replenishment._id}
                                     replenishment={replenishment}
+                                    locations={locations}
                                     onTntClick={handleTntButtonClick}
                                 />
                             ))}
@@ -320,10 +325,10 @@ const SupplyManagementReplenishmentForecasted = ({ replenishment }) => {
 
 const SupplyManagementReplenishmentAccepted = ({
     replenishment,
+    locations = [],
     onTntClick,
 }) => {
     const classes = useStyles();
-
     return (
         <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -331,6 +336,11 @@ const SupplyManagementReplenishmentAccepted = ({
                     The system forcasted that you'll be in need of{" "}
                     {replenishment._source.quantity}{" "}
                     {replenishment._source.containerSubType}{" "}
+                    {
+                        locations.find(
+                            (loc) => loc._id === replenishment._source.location
+                        )?._source.locationName
+                    }
                 </Typography>
                 {/* <Typography className={classes.secondaryHeading}>
                     {replenishment._source.containerSubType}

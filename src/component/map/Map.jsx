@@ -20,7 +20,7 @@ const defaultMapsSettings = [
         label: "Satelite view",
     },
     {
-        mapStyle: "mapbox://styles/mapbox/streets-v9",
+        mapStyle: "mapbox://styles/mapbox/dark-v10",
         isChecked: true,
         label: "Street view",
     },
