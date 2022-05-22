@@ -69,82 +69,82 @@ const Page = ({
 
     const maxStepIndex = 3;
     return (
-        <>
-            <AppBar color="transparent" position="static" square>
-                <Toolbar className={classes.toolbar}>
-                    <span
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                        }}
+    <>
+        <AppBar color="transparent" position="static" square>
+            <Toolbar className={classes.toolbar}>
+                <span
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-evenly",
+                    }}
+                >
+                    <img
+                        src="/logo192.png"
+                        className={classes.logo}
+                        alt="Logo"
+                    />
+                    <Typography variant="h6" className={classes.title}>
+                        {title}
+                    </Typography>
+                </span>
+                <span>
+                    <Button
+                        onClick={onResetStep}
+                        className={classes.playButton}
+                        variant="outlined"
+                        color="secondary"
                     >
-                        <img
-                            src="/logo192.png"
-                            className={classes.logo}
-                            alt="Logo"
-                        />
-                        <Typography variant="h6" className={classes.title}>
-                            {title}
-                        </Typography>
-                    </span>
-                    <span>
-                        <Button
-                            onClick={onResetStep}
-                            className={classes.playButton}
-                            variant="outlined"
-                            color="secondary"
-                        >
-                            Reset to step 1
-                        </Button>
-                        <Button
-                            disabled={stepIndex >= maxStepIndex}
-                            onClick={onPlayStep}
-                            className={classes.playButton}
-                            variant="contained"
-                            color="primary"
-                        >
-                            PLAY STEP
-                        </Button>
-                        {stepIndex < maxStepIndex &&
-                            `Next: ${steps[stepIndex].name}`}
-                    </span>
-                    <span>
-                        <Select
-                            value={actor.id}
-                            style={{ marginRight: "1rem" }}
-                            label="Kuzzle index"
-                            onChange={onActorChange}
-                        >
-                            {actors.map((v) => (
-                                <MenuItem value={v.id}>{v.label}</MenuItem>
-                            ))}
-                        </Select>
-                        <Select
-                            value={kuzzleIndex}
-                            label="Kuzzle index"
-                            onChange={(e) => setKuzzleIndex(e.target.value)}
-                        >
-                            {new Array(5).fill(0).map((v, index) => (
-                                <MenuItem
-                                    value={`tenant-sdl-geodis${index + 1}`}
-                                >
-                                    tenant-sdl-geodis{index + 1}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </span>
-                </Toolbar>
-            </AppBar>
-            <Container
-                maxWidth="xl"
-                className={classes.container}
-                id="page-container"
-                {...props}
-            >
-                {children}
-            </Container>
-        </>
-    );
+                        Reset to step 1
+                    </Button>
+                    <Button
+                        disabled={stepIndex >= maxStepIndex}
+                        onClick={onPlayStep}
+                        className={classes.playButton}
+                        variant="contained"
+                        color="primary"
+                    >
+                        PLAY STEP
+                    </Button>
+                    {stepIndex < maxStepIndex &&
+                        `Next: ${steps[stepIndex].name}`}
+                </span>
+                <span>
+                    <Select
+                        value={actor.id}
+                        style={{ marginRight: "1rem" }}
+                        label="Kuzzle index"
+                        onChange={onActorChange}
+                    >
+                        {actors.map((v) => (
+                            <MenuItem value={v.id}>{v.label}</MenuItem>
+                        ))}
+                    </Select>
+                    <Select
+                        value={kuzzleIndex}
+                        label="Kuzzle index"
+                        onChange={(e) => setKuzzleIndex(e.target.value)}
+                    >
+                        {new Array(5).fill(0).map((v, index) => (
+                            <MenuItem
+                                value={`tenant-sdl-geodis${index + 1}`}
+                            >
+                                tenant-sdl-geodis{index + 1}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </span>
+            </Toolbar>
+        </AppBar>
+        <Container
+            maxWidth="xl"
+            className={classes.container}
+            id="page-container"
+            {...props}
+        >
+            {children}
+        </Container>
+    </>
+);
 };
 
 export default Page;
