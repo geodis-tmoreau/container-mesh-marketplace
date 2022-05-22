@@ -222,10 +222,11 @@ const SupplyManagement = ({
     return (
         <Grid container spacing={3}>
             <Grid item xs>
-                {/* todo:: Hide when empty */}
-                {/* {forcasted.length > 0 && ( */}
                 <div className={classes.root}>
-                    <Typography variant="h4">Forecasted</Typography>
+                    <Typography variant="h4">
+                        Forecasted ({forcasted?.length || 0}) TODO :: Afficher
+                        date et lieu
+                    </Typography>
                     <Box>
                         {forcasted.map((replenishment) => (
                             <SupplyManagementReplenishmentForecasted
@@ -235,22 +236,21 @@ const SupplyManagement = ({
                         ))}
                     </Box>
                 </div>
-                {/* )} */}
-                {accepted.length > 0 && (
-                    <div className={classes.root}>
-                        <Typography variant="h4">Accepted</Typography>
-                        <Box>
-                            {accepted.map((replenishment) => (
-                                <SupplyManagementReplenishmentAccepted
-                                    key={replenishment._id}
-                                    replenishment={replenishment}
-                                    locations={locations}
-                                    onTntClick={handleTntButtonClick}
-                                />
-                            ))}
-                        </Box>
-                    </div>
-                )}
+                <div className={classes.root}>
+                    <Typography variant="h4" style={{ padding: "1rem 0" }}>
+                        Accepted ({accepted?.length || 0})
+                    </Typography>
+                    <Box>
+                        {accepted.map((replenishment) => (
+                            <SupplyManagementReplenishmentAccepted
+                                key={replenishment._id}
+                                replenishment={replenishment}
+                                locations={locations}
+                                onTntClick={handleTntButtonClick}
+                            />
+                        ))}
+                    </Box>
+                </div>
             </Grid>
             {trackedReplenishment !== null && (
                 <Grid item xs={3}>
