@@ -44,6 +44,23 @@ class KuzzleService {
         return availableSessions;
     }
 
+    async getCurrentSession() {
+      const { result: currentSession } = await kuzzle.query({
+          controller: "step",
+          action: "getSession",
+      });
+
+      return currentSession;
+  }
+
+  async startSession(session) {
+    await kuzzle.query({
+        controller: "step",
+        action: "startSession",
+        session
+    });
+}
+
     putProposal(quantity, price) {
         return kuzzle.document.update(
             this.index,

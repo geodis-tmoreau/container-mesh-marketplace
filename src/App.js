@@ -18,11 +18,15 @@ import ReplenishmentsContext from "contexts/ReplenishmentsContext";
 import RentTab from "component/tabs/renting/RentTab";
 
 function App() {
+  window.kuzzle = kuzzle;
+
   const [kuzzleIndex, setKuzzleIndex] = useLocalStorage(
     "kuzzleIndex",
     "tenant-sdl-geodis1"
   );
 
+  const [currentSession, setCurrentSession] = useState(null);
+  const [canPlayStep3, setCanPlayStep3] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
   const [locations, setLocations] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -45,7 +49,6 @@ function App() {
       collection,
       {},
       (notification) => {
-        console.log("Received notification", notification);
         if (notification.type !== "document") return;
         const elemIndex = target.findIndex(
           (o) => o._id === notification.result._id
@@ -66,37 +69,38 @@ function App() {
     );
   };
 
-  useEffect(() => {
-    async function init() {
-      await kuzzleService.init(kuzzleIndex);
+  // useEffect(() => {
+  //   async function init() {
+  //     await kuzzleService.init(kuzzleIndex);
 
-      const availableSessions = await kuzzleService.getSessions();
-      setSessions(availableSessions);
 
-      const resultLocations = await kuzzleService.getLocations();
-      const resultReplenishments =
-        await kuzzleService.getReplenishments();
-      const resultEvents = await kuzzleService.getEvents();
-      const resultJitEvents = await kuzzleService.getJitEvents();
+  //     const availableSessions = await kuzzleService.getSessions();
+  //     setSessions(availableSessions);
 
-      subscribeForCollection("locations", locations, setLocations);
-      subscribeForCollection(
-        "replenishments",
-        replenishments,
-        setReplenishments
-      );
-      subscribeForCollection("events", events, setEvents);
-      subscribeForCollection("jit-events", jitEvents, setJitEvents);
+  //     const resultLocations = await kuzzleService.getLocations();
+  //     const resultReplenishments =
+  //       await kuzzleService.getReplenishments();
+  //     const resultEvents = await kuzzleService.getEvents();
+  //     const resultJitEvents = await kuzzleService.getJitEvents();
 
-      setLocations(resultLocations.hits);
-      setReplenishments(resultReplenishments.hits);
-      setEvents(resultEvents.hits);
-      setJitEvents(resultJitEvents.hits);
-      setStepIndex(0);
-    }
-    init();
-    return () => kuzzle.disconnect();
-  }, [kuzzleIndex]);
+  //     subscribeForCollection("locations", locations, setLocations);
+  //     subscribeForCollection(
+  //       "replenishments",
+  //       replenishments,
+  //       setReplenishments
+  //     );
+  //     subscribeForCollection("events", events, setEvents);
+  //     subscribeForCollection("jit-events", jitEvents, setJitEvents);
+
+  //     setLocations(resultLocations.hits);
+  //     setReplenishments(resultReplenishments.hits);
+  //     setEvents(resultEvents.hits);
+  //     setJitEvents(resultJitEvents.hits);
+  //     setStepIndex(0);
+  //   }
+  //   init();
+  //   return () => kuzzle.disconnect();
+  // }, [kuzzleIndex]);
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -163,6 +167,21 @@ function App() {
       setEvents(resultEvents.hits);
       setJitEvents(resultJitEvents.hits);
 
+      const session = await kuzzleService.getCurrentSession();
+      let selectedSession = session || availableSessions[0];
+      setCurrentSession(selectedSession);
+
+      await kuzzle.realtime.subscribe(
+        kuzzleService.index,
+        'replenishments',
+        {
+          "exists": "proposal.quantity"
+        },
+        () => {
+          setCanPlayStep3(true);
+        },
+        { scope: 'in' })
+
       await kuzzleService.init(kuzzleIndex);
       setStepIndex(0);
     }
@@ -172,12 +191,13 @@ function App() {
   const classes = makeStyles();
 
   const onPlayStep = () => {
-    console.log({stepIndex})
     kuzzleService.playStep(stepIndex + 1)
       .then(() => {
         setStepIndex(stepIndex + 1);
       })
-      .catch(console.error)
+      .catch(e => {
+        alert(`${e.message}: reload the application to start a new session`)
+      })
   };
 
   const onResetStep = () => {
@@ -186,13 +206,25 @@ function App() {
         setStepIndex(1);
         setTabIndex("1");
       })
-      .catch(console.error)
+      .catch(e => {
+        alert(`${e.message}: reload the application to start a new session`)
+      })
   };
 
   const onActorChange = (e) => {
     setActor(actors.find((a) => a.id === e.target.value));
     setTabIndex("1");
   };
+
+  const startSession = (session) => {
+    kuzzleService.startSession(session)
+      .then(() => {
+        setCurrentSession(session);
+      })
+      .catch(e => {
+        alert(`${e.message}: reload the application to start a new session`)
+      })
+  }
 
     return (
         <ThemeProvider theme={theme}>
@@ -201,6 +233,7 @@ function App() {
                 <Router>
                     <Page
                         title="ContainerMesh"
+                        canPlayStep3={canPlayStep3}
                         sessions={sessions}
                         kuzzleIndex={kuzzleIndex}
                         setKuzzleIndex={setKuzzleIndex}
@@ -209,6 +242,8 @@ function App() {
                         onResetStep={onResetStep}
                         actor={actor}
                         onActorChange={onActorChange}
+                        currentSession={currentSession}
+                        startSession={startSession}
                     >
                         {actor.type === STOCK_MANAGER ? (
                             <TabContext value={tabIndex}>

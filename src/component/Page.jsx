@@ -64,6 +64,9 @@ const Page = ({
     onPlayStep,
     onResetStep,
     sessions,
+    canPlayStep3,
+    currentSession,
+    startSession,
     ...props
 }) => {
     const classes = useStyles();
@@ -98,7 +101,7 @@ const Page = ({
                             Start with step 1
                         </Button>
                         { stepIndex !== 0 ? <Button
-                            disabled={stepIndex + 1 > maxStepIndex}
+                            disabled={stepIndex + 1 === 3 && ! canPlayStep3}
                             onClick={onPlayStep}
                             className={classes.playButton}
                             variant="contained"
@@ -123,11 +126,16 @@ const Page = ({
                         <Select
                             value={kuzzleIndex}
                             label="Kuzzle index"
-                            onChange={(e) => setKuzzleIndex(e.target.value)}
+                            onChange={(e) => {
+                                startSession(e.target.value)
+                                setKuzzleIndex(`tenant-sdl-${e.target.value}`)
+                            }}
                         >
+                            {console.log({currentSession})}
                             {sessions.map((session) => (
                                 <MenuItem
-                                    value={`tenant-sdl-${session}`}
+                                    value={session}
+                                    selected={session === currentSession}
                                 >
                                     {session}
                                 </MenuItem>
