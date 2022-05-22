@@ -158,6 +158,9 @@ const Page = ({
                 {...props}
             >
                 {children}
+                <footer style={{color: "gray", position: "fixed", bottom: 0, width: '100%'}}>
+                <center>Conceived by <a target="_blank" href="https://geodis.com"><img src="/geodis-mini.png" style={{ width: 73, height: 30}}/></a> Powered by <a target="_blank" href="https://kuzzle.io/"><img src="/kuzzle-mini.png" style={{ width: 73, height: 30}}/></a></center>
+            </footer>
             </Container>
         </>
     );
