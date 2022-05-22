@@ -366,7 +366,7 @@ const SupplyManagementReplenishmentAccepted = ({
           <strong>
             {!!location ? location._source.lo.locationName : ""}
           </strong>{" "}
-          week{" "}
+          on week{" "}
           <strong>
             {replenishment._source.requestedDate.split("-").at(-1)}
           </strong>
