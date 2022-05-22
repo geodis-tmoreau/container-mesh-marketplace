@@ -4,24 +4,16 @@ import {
     AccordionSummary,
     Box,
     Button,
-    capitalize,
-    Drawer,
     Grid,
-    Icon,
-    Input,
     makeStyles,
     Paper,
     TextField,
     Typography,
-    useTheme,
-    List,
     ListItem,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { useEffect, useState } from "react";
-import ReactJson from "react-json-view";
+import { useState } from "react";
 import Timeline from "component/timeline/Timeline";
-import kuzzle from "services/kuzzle";
 import kuzzleService from "services/kuzzle/kuzzle.service";
 import moment from "moment";
 
@@ -58,12 +50,12 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
                 alignItems="center"
                 justify="center"
             >
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{ width: "100%", padding: "1rem" }}>
                     <Paper
                         variant="outlined"
                         elevation={0}
                         className={classes.formContainer}
-                        style={{ minHeight: "450px" }}
+                        style={{ minHeight: "450px", padding: "1rem" }}
                     >
                         No replenishments detected by the system
                     </Paper>
@@ -79,19 +71,146 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
         (replenishment) => replenishment._source.status !== "FORECASTED"
     );
 
-    const eventGroups = [
+    const timelineEvents = events.map((event) => {
+        if (event._id.startsWith("vessel_")) {
+            // 1R event
+            return {
+                linkedObject: event._source.resourceId,
+                location: {
+                    lat: -118.25752258300781,
+                    lon: 33.736902846767954,
+                },
+                performedBy: {
+                    branch: {
+                        branchName: event._source.event.createdBy.partyName,
+                    },
+                },
+                dateTime: event._source.event.eventCreatedDateTime,
+                eventCode: event._source.event.code,
+                eventName: "Allocate " + event._source.event.description,
+                eventTypeIndicator: "picto",
+            };
+        } else {
+            let eventName;
+
+            if (event._source.portCallServiceTypeCode === "SOSP") {
+                eventName = "SOSP leave USLAX";
+            } else if (event._source.portCallServiceTypeCode === "ETA-BERTH") {
+                eventName = "ETA NLRTM " + event._source.remark;
+            } else if (event._source.portCallServiceTypeCode === "RTA-BERTH") {
+                eventName = "RTA terminal " + event._source.remark;
+            } else if (event._source.portCallServiceTypeCode === "PTA-BERTH") {
+                eventName = "PTA " + event._source.remark;
+            } else if (event._source.portCallServiceTypeCode === "ATA-BERTH") {
+                eventName = "ATA " + event._source.eventCreatedDateTime;
+            }
+            // DCSA event
+            const location =
+                event._source.vesselPosition || event._source.eventLocation;
+            return {
+                linkedObject:
+                    event._source.transportCall.vessel.vesselName +
+                    "," +
+                    event._source.transportCall.vessel.vesselIMONumber,
+                location: {
+                    lat: location ? location.latitude : null,
+                    lon: location ? location.longitude : null,
+                },
+                performedBy: {
+                    branch: {
+                        branchName: event._source.publisher.partyName,
+                    },
+                },
+                dateTime: event._source.eventCreatedDateTime,
+                eventCode: event._source.portCallServiceTypeCode,
+                eventName,
+                eventTypeIndicator: "??",
+            };
+        }
+    });
+
+    const timelineEventGroups = [
         {
+            name: "Events",
             departure: {
-                date: Date.parse("01 Jan 1970 00:00:01 GMT"),
+                date: moment("2022-01-01T04:00:00Z"),
+                location: {
+                    id: "https://api.onerecord.fr/locations/uslax",
+                    geolocation: {
+                        id: "https://api.onerecord.fr/locations/uslax/geolocation",
+                        elevation: {
+                            unit: "m",
+                            value: 0.0,
+                        },
+                        latitude: 33.74021,
+                        longitude: 118.265,
+                    },
+                    code: "USLAX",
+                    locationName: "Los Angeles",
+                    locationType: "Port",
+                },
             },
             arrival: {
-                date: Date.parse("31 Dec 2025 23:59:59 GMT"),
+                date: moment("2022-01-30T10:50:02Z"),
+                location: {
+                    id: "https://api.onerecord.fr/locations/nlrtm",
+                    geolocation: {
+                        id: "https://api.onerecord.fr/locations/nlrtm/geolocation",
+                        elevation: {
+                            unit: "m",
+                            value: 0.0,
+                        },
+                        latitude: 51.95138,
+                        longitude: 4.05362,
+                    },
+                    code: "NLRTM",
+                    locationName: "Rotterdam",
+                    locationType: "Port",
+                },
             },
+            checkPoints: [
+                {
+                    date: moment("2022-01-01T04:00:00Z"),
+                    location: {
+                        id: "https://api.onerecord.fr/locations/uslax",
+                        geolocation: {
+                            id: "https://api.onerecord.fr/locations/uslax/geolocation",
+                            elevation: {
+                                unit: "m",
+                                value: 0.0,
+                            },
+                            latitude: 33.74021,
+                            longitude: 118.265,
+                        },
+                        code: "USLAX",
+                        locationName: "Los Angeles",
+                        locationType: "Port",
+                    },
+                },
+                {
+                    date: moment("2022-01-30T10:50:02Z"),
+                    location: {
+                        id: "https://api.onerecord.fr/locations/nlrtm",
+                        geolocation: {
+                            id: "https://api.onerecord.fr/locations/nlrtm/geolocation",
+                            elevation: {
+                                unit: "m",
+                                value: 0.0,
+                            },
+                            latitude: 51.95138,
+                            longitude: 4.05362,
+                        },
+                        code: "NLRTM",
+                        locationName: "Rotterdam",
+                        locationType: "Port",
+                    },
+                },
+            ],
+            events: [],
         },
     ];
 
     const handleTntButtonClick = (replenishment) => (event) => {
-        console.log(event);
         event.stopPropagation();
         setTrackedReplenishment(replenishment);
     };
@@ -99,6 +218,7 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
     return (
         <Grid container spacing={3}>
             <Grid item xs>
+                {/* todo:: Hide when empty */}
                 {/* {forcasted.length > 0 && ( */}
                 <div className={classes.root}>
                     <Typography variant="h4">Forecasted</Typography>
@@ -129,9 +249,12 @@ const SupplyManagement = ({ replenishments = [], events = [] }) => {
             </Grid>
             {trackedReplenishment !== null && (
                 <Grid item xs={3}>
-                    <Typography variant="h4">Track &and; Trace</Typography>
+                    <Typography variant="h4">Track & Trace</Typography>
                     <Paper className={classes.drawerPaper}>
-                        <Timeline groups={eventGroups} events={[]} />
+                        <Timeline
+                            groups={timelineEventGroups}
+                            events={timelineEvents}
+                        />
                         <Button
                             variant="contained"
                             color="secondary"
@@ -214,7 +337,7 @@ const SupplyManagementReplenishmentAccepted = ({
                 </Typography> */}
             </AccordionSummary>
             <AccordionDetails>
-                {replenishment._source.proposal && (
+                {replenishment._source.proposal?.deliveryDate && (
                     <SupplyManagementReplenishmentProposal
                         key={replenishment._id}
                         replenishment={replenishment}
