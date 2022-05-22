@@ -16,6 +16,7 @@ import { useState } from "react";
 import Timeline from "component/timeline/Timeline";
 import kuzzleService from "services/kuzzle/kuzzle.service";
 import moment from "moment";
+import { useTheme } from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -224,7 +225,7 @@ const SupplyManagement = ({
             <Grid item xs>
                 <div className={classes.root}>
                     <Typography variant="h4">
-                        Forecasted ({forcasted?.length || 0})
+                        Forecasted replenishments ({forcasted?.length || 0})
                     </Typography>
                     <Box>
                         {forcasted.map((replenishment) => (
@@ -238,7 +239,7 @@ const SupplyManagement = ({
                 </div>
                 <div className={classes.root}>
                     <Typography variant="h4" style={{ padding: "1rem 0" }}>
-                        Accepted ({accepted?.length || 0})
+                        Confirmed replenishments ({accepted?.length || 0})
                     </Typography>
                     <Box>
                         {accepted.map((replenishment) => (
@@ -300,26 +301,18 @@ const SupplyManagementReplenishmentForecasted = ({
         >
             <div style={{ display: "flex", alignContent: "center" }}>
                 <Typography>
-                    The system forcasted that you'll be in need of &nbsp;
-                    {replenishment._source.quantity} "
-                    {replenishment._source.containerSubType} containers"
+                    The system forecasted you will need{" "}
+                    {replenishment._source.quantity}{" "}
+                    {replenishment._source.containerSubType} containers by week{" "}
+                    {replenishment._source.requestedDate.split("-").at(-1)}
                     {!!location
-                        ? " in " + location._source.lo.locationName
+                        ? " at " + location._source.lo.locationName
                         : ""}
-                    &nbsp;for&nbsp;{" "}
-                    {moment("2022-01-01")
-                        .add(
-                            replenishment._source.requestedDate
-                                .split("-")
-                                .at(-1),
-                            "week"
-                        )
-                        .format("L")}
                     .
                 </Typography>
-                <Typography style={{ textAlign: "right" }}>
+                {/* <Typography style={{ textAlign: "right" }}>
                     ({replenishment._id})
-                </Typography>
+                </Typography> */}
             </div>
             <div style={{ display: "flex", alignContent: "center" }}>
                 <TextField
@@ -349,26 +342,34 @@ const SupplyManagementReplenishmentAccepted = ({
     const location = locations.find(
         (loc) => loc._id === replenishment._source.location
     );
-    console.log(locations, location, replenishment._source.location);
+
+    console.log(replenishment);
+
     return (
         <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.heading} variant="body1">
-                    The system forcasted that you'll be in need of{" "}
-                    {replenishment._source.quantity}{" "}
-                    {replenishment._source.containerSubType}{" "}
-                    {!!location
-                        ? " in " + location._source.lo.locationName
-                        : ""}
-                    &nbsp;for&nbsp;{" "}
-                    {moment("2022-01-01")
-                        .add(
-                            replenishment._source.requestedDate
-                                .split("-")
-                                .at(-1),
-                            "week"
-                        )
-                        .format("L")}
+                    Ongoing replanishment of{" "}
+                    <strong>
+                        {replenishment._source.quantity -
+                            (replenishment?._source?.proposal?.status ===
+                                "CONFIRMED" ||
+                            replenishment?._source?.proposal?.status ===
+                                "COMPLETED"
+                                ? replenishment._source.proposal.quantity
+                                : 0)}
+                    </strong>{" "}
+                    <strong>{replenishment._source.containerSubType}</strong>{" "}
+                    containers for{" "}
+                    <strong>{replenishment._source.quantity}</strong> containers
+                    on going for{" "}
+                    <strong>
+                        {!!location ? location._source.lo.locationName : ""}
+                    </strong>{" "}
+                    week{" "}
+                    <strong>
+                        {replenishment._source.requestedDate.split("-").at(-1)}
+                    </strong>
                 </Typography>
                 {/* <Typography className={classes.secondaryHeading}>
                     {replenishment._source.containerSubType}
@@ -405,7 +406,7 @@ const SupplyManagementReplenishmentProposal = ({
     onTntButton,
 }) => {
     const classes = useStyles();
-    console.log(replenishment._source.proposal);
+    const theme = useTheme();
 
     return (
         <Paper
@@ -419,23 +420,44 @@ const SupplyManagementReplenishmentProposal = ({
             variant="outlined"
         >
             <Typography className={classes.heading}>
-                {replenishment._source.proposal.provider} proposes{" "}
-                {replenishment._source.proposal.quantity} out of{" "}
-                {replenishment._source.quantity}{" "}
-                {replenishment._source.containerSubType}{" "}
-                {replenishment._source.containerType} for{" "}
-                {replenishment._source.proposal.price}${" "}
-                {!!replenishment?._source?.proposal?.deliveryDate?.proposed
-                    ? "in " +
-                      moment(
-                          replenishment._source.proposal.deliveryDate.proposed
-                      ).fromNow() +
-                      " (" +
-                      moment(
-                          replenishment._source.proposal.deliveryDate.proposed
-                      ).toISOString() +
-                      ")"
-                    : ""}
+                <strong>{replenishment._source.proposal.provider}</strong>{" "}
+                {replenishment._source.proposal.status === "PROPOSAL"
+                    ? "is proposing you to carry"
+                    : replenishment._source.proposal.status === "COMPLETED"
+                    ? "has delivered"
+                    : "is carrying"}{" "}
+                <strong>{replenishment._source.proposal.quantity}</strong> out
+                of <strong>{replenishment._source.quantity}</strong>{" "}
+                <strong>{replenishment._source.containerSubType}</strong>{" "}
+                containers{" "}
+                {replenishment._source.proposal.status === "COMPLETED" ? (
+                    <>
+                        on <strong>{moment("2022-12-30").format("L")}</strong>
+                    </>
+                ) : (
+                    <>
+                        to be delivered by{" "}
+                        {replenishment._source.proposal.status ===
+                            "PROPOSAL" && (
+                            <strong>{moment("2022-12-30").format("L")}</strong>
+                        )}
+                        .
+                    </>
+                )}
+            </Typography>
+            <Typography
+                className={classes.heading}
+                style={{
+                    justifyContent: "space-between",
+                    alignContent: "center",
+                    fontWeight: "bold",
+                    color:
+                        replenishment._source.proposal.status === "COMPLETED"
+                            ? theme.palette.success.main
+                            : theme.palette.text.main,
+                }}
+            >
+                {replenishment._source.proposal.status}
             </Typography>
             {"COMPLETED" !== replenishment._source.proposal.status ? (
                 <Button

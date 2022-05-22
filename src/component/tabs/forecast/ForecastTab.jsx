@@ -11,10 +11,10 @@ import moment from "moment";
 import Map from "component/map/Map";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LocationList from "./LocationList";
 import Charts from "./Charts";
-
+import { steps } from "constants";
 import locationService from "services/location.service";
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Array} props.locations
  * @returns
  */
-const ForecastTab = ({ locations }) => {
+const ForecastTab = ({ locations, stepIndex }) => {
     const classes = useStyles();
 
     const [forecastRange, setForecastRange] = useState(4);
@@ -67,19 +67,17 @@ const ForecastTab = ({ locations }) => {
         zoom: 1,
     });
 
-    // TODO :: use real date
-    const fromDate = moment();
+    useEffect(() => {
+        setSelectedLocation(null);
+    }, [locations]);
+
+    const formDate = steps[stepIndex].date;
 
     const onSelectForecastRange = (event) => {
         setForecastRange(event.target.value);
     };
 
     const onSelectLocation = (location) => () => {
-        // setViewState({
-        //   longitude: location._source.lo.geolocation.longitude.value,
-        //   latitude: location._source.lo.geolocation.latitude.value,
-        //   zoom: 10
-        // })
         setSelectedLocation(location);
     };
 

@@ -139,6 +139,9 @@ function App() {
     useEffect(() => {
         async function init() {
             await kuzzleService.init(kuzzleIndex);
+            const availableSessions = await kuzzleService.getSessions();
+            setSessions(availableSessions);
+
             const resultLocations = await kuzzleService.getLocations();
             const resultReplenishments =
                 await kuzzleService.getReplenishments();
@@ -153,12 +156,13 @@ function App() {
             );
             subscribeForCollection("events", events, setEvents);
             subscribeForCollection("jit-events", jitEvents, setJitEvents);
-            console.log(resultEvents.hits);
 
             setLocations(resultLocations.hits);
             setReplenishments(resultReplenishments.hits);
             setEvents(resultEvents.hits);
             setJitEvents(resultJitEvents.hits);
+
+            await kuzzleService.init(kuzzleIndex);
             setStepIndex(1);
         }
         init();
@@ -224,7 +228,10 @@ function App() {
                                     </TabList>
                                 </Paper>
                                 <TabPanel value="1">
-                                    <ForecastTab locations={locations} />
+                                    <ForecastTab
+                                        locations={locations}
+                                        stepIndex={stepIndex}
+                                    />
                                 </TabPanel>
                                 <TabPanel value="2">
                                     <SupplyManagement
@@ -243,7 +250,10 @@ function App() {
                                             setTabIndex(newValue)
                                         }
                                     >
-                                        <Tab label="Replenishments" value="1" />
+                                        <Tab
+                                            label="Propose transports"
+                                            value="1"
+                                        />
                                     </TabList>
                                 </Paper>
                                 <TabPanel value="1">
