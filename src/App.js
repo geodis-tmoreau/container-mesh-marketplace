@@ -280,9 +280,9 @@ function App() {
                                 <TabPanel value="1">
                                     <ProposalTab />
                                 </TabPanel>
-                                {/* <TabPanel value="2">
-                                    <RentTab />
-                                </TabPanel> */}
+                                <TabPanel value="2">
+                                    <RentTab locations={locations} />
+                                </TabPanel>
                             </TabContext>
                         )}
                     </Page>

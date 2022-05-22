@@ -6,6 +6,7 @@ export const TRANSPORTER = "transporter";
 export const actors = [
     { id: "msc", label: "MSC - Stock Manager", type: STOCK_MANAGER },
     { id: "cmacgm", label: "CMA-CGM - Carrier", type: TRANSPORTER },
+    { id: "maersk", label: "MAERSK - Carrier", type: TRANSPORTER },
 ];
 
 export const locations = [{ id: "", label: "" }];
@@ -27,5 +28,22 @@ export const steps = [
         name: "Execution of service MSC transport NLRTM",
         date: moment("2022-01-22T00:00:00"),
         todo: [],
+    },
+];
+
+export const availabilities = [
+    {
+        carrier: "CMA CGM",
+        pickUp: "LAX",
+        returnLocation: "RTM",
+        leaseRate: 7,
+        submitted: false,
+    },
+    {
+        carrier: "MSC",
+        pickUp: "LAX",
+        returnLocation: "RTM",
+        leaseRate: 3,
+        submitted: false,
     },
 ];

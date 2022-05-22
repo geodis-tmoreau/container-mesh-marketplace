@@ -35,6 +35,17 @@ class KuzzleService {
         });
     }
 
+    getContainers() {
+        return kuzzle.document.search(
+            "usecase-2",
+            "containers",
+            {},
+            {
+                size: 50,
+            }
+        );
+    }
+
     async getSessions() {
         const { result: availableSessions } = await kuzzle.query({
             controller: "step",
