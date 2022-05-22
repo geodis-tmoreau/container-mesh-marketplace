@@ -349,7 +349,7 @@ const SupplyManagementReplenishmentAccepted = ({
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography className={classes.heading} variant="body1">
-          Ongoing replanishment of{" "}
+          Ongoing replenishment of{" "}
           <strong>
             {replenishment._source.quantity -
               (replenishment?._source?.proposal?.status ===
