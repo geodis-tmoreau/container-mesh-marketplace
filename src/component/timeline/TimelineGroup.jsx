@@ -124,7 +124,7 @@ const GroupCheckPoints = ({ group }) =>
  */
 const TimelineGroup = ({ group }) => {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     const onExpandClick = () => {
         setOpen(!open);
