@@ -7,6 +7,8 @@ import {
     Button,
     Select,
     MenuItem,
+    FormControl,
+    InputLabel,
 } from "@material-ui/core";
 import useLocalStorage from "hooks/useLocalStorage";
 import { useState } from "react";
@@ -97,7 +99,7 @@ const Page = ({
                         >
                             Start with step 1
                         </Button>
-                        { stepIndex !== 0 ? <Button
+                        {stepIndex !== 0 ? <Button
                             disabled={stepIndex + 1 > maxStepIndex}
                             onClick={onPlayStep}
                             className={classes.playButton}
@@ -110,29 +112,35 @@ const Page = ({
                             `Next: ${steps[stepIndex + 1].name}`}
                     </span>
                     <span>
-                        <Select
-                            value={actor.id}
-                            style={{ marginRight: "1rem" }}
-                            label="Kuzzle index"
-                            onChange={onActorChange}
-                        >
-                            {actors.map((v) => (
-                                <MenuItem value={v.id}>{v.label}</MenuItem>
-                            ))}
-                        </Select>
-                        <Select
-                            value={kuzzleIndex}
-                            label="Kuzzle index"
-                            onChange={(e) => setKuzzleIndex(e.target.value)}
-                        >
-                            {sessions.map((session) => (
-                                <MenuItem
-                                    value={`tenant-sdl-${session}`}
-                                >
-                                    {session}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="actor-label">User</InputLabel>
+                            <Select
+                                value={actor.id}
+                                style={{ marginRight: "1rem" }}
+                                label="Kuzzle index"
+                                onChange={onActorChange}
+                            >
+                                {actors.map((v) => (
+                                    <MenuItem value={v.id}>{v.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
+                            <Select
+                                value={kuzzleIndex}
+                                label="Kuzzle index"
+                                onChange={(e) => setKuzzleIndex(e.target.value)}
+                            >
+                                {sessions.map((session) => (
+                                    <MenuItem
+                                        value={`tenant-sdl-${session}`}
+                                    >
+                                        {session}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </span>
                 </Toolbar>
             </AppBar>
