@@ -25,11 +25,11 @@ function App() {
     "tenant-sdl-geodis1"
   );
 
-  const [currentSession, setCurrentSession] = useState(null);
+  const [currentSession, setCurrentSession] = useState('geodis1');
   const [canPlayStep3, setCanPlayStep3] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
   const [locations, setLocations] = useState([]);
-  const [sessions, setSessions] = useState([]);
+  const [sessions, setSessions] = useState(['geodis1', 'geodis2']);
   const [replenishments, setReplenishments] = useState([]);
   const [events, setEvents] = useState([]);
   const [jitEvents, setJitEvents] = useState([]);
@@ -141,6 +141,7 @@ function App() {
       let selectedSession = session || availableSessions[0];
       console.log({selectedSession})
       setCurrentSession(selectedSession);
+      window.ses = selectedSession
 
       await kuzzle.realtime.subscribe(
         kuzzleService.index,
@@ -176,6 +177,10 @@ function App() {
       .then(() => {
         setStepIndex(1);
         setTabIndex("1");
+        return kuzzleService.getCurrentSession();
+      })
+      .then(session => {
+        setCurrentSession(session)
       })
       .catch(e => {
         alert(`${e.message}: reload the application to start a new session`)
@@ -191,6 +196,7 @@ function App() {
     kuzzleService.startSession(session)
       .then(() => {
         setCurrentSession(session);
+        window.ses = session
       })
       .catch(e => {
         alert(`${e.message}: reload the application to start a new session`)
