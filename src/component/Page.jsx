@@ -116,7 +116,7 @@ const Page = ({
                     </span>
                     <span>
                         <FormControl className={classes.formControl}>
-                            <InputLabel id="actor-label">User</InputLabel>
+                            <InputLabel id="actor-label">Persona</InputLabel>
                             <Select
                                 value={actor.id}
                                 style={{ marginRight: "1rem" }}
