@@ -15,6 +15,7 @@ import useLocalStorage from "hooks/useLocalStorage";
 import { actors, STOCK_MANAGER } from "constants";
 import ProposalTab from "component/tabs/proposal/ProposalTab";
 import ReplenishmentsContext from "contexts/ReplenishmentsContext";
+import RentTab from "component/tabs/renting/RentTab";
 
 function App() {
   const [kuzzleIndex, setKuzzleIndex] = useLocalStorage(
@@ -193,86 +194,90 @@ function App() {
     setTabIndex("1");
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <ReplenishmentsContext.Provider value={replenishments}>
-        <Router>
-          <Page
-            title="ContainerMesh"
-            sessions={sessions}
-            kuzzleIndex={kuzzleIndex}
-            setKuzzleIndex={setKuzzleIndex}
-            stepIndex={stepIndex}
-            onPlayStep={onPlayStep}
-            onResetStep={onResetStep}
-            actor={actor}
-            onActorChange={onActorChange}
-          >
-            {actor.type === STOCK_MANAGER ? (
-              <TabContext value={tabIndex}>
-                <Paper square className={classes.root}>
-                  <TabList
-                    value={tabIndex}
-                    onChange={(event, newValue) =>
-                      setTabIndex(newValue)
-                    }
-                  >
-                    <Tab label="Forecast" value="1" />
-                    <Tab
-                      label={
-                        <Badge
-                          badgeContent={
-                            replenishments.length
-                          }
-                          color="error"
-                        >
-                          Supply Management
-                        </Badge>
-                      }
-                      value="2"
-                    />
-                  </TabList>
-                </Paper>
-                <TabPanel value="1">
-                  <ForecastTab
-                    locations={locations}
-                    stepIndex={stepIndex}
-                  />
-                </TabPanel>
-                <TabPanel value="2">
-                  <SupplyManagement
-                    locations={locations}
-                    replenishments={replenishments}
-                    events={[...events, ...jitEvents]}
-                  />
-                </TabPanel>
-              </TabContext>
-            ) : (
-              <TabContext value={tabIndex}>
-                <Paper square className={classes.root}>
-                  <TabList
-                    value={tabIndex}
-                    onChange={(event, newValue) =>
-                      setTabIndex(newValue)
-                    }
-                  >
-                    <Tab
-                      label="Propose transports"
-                      value="1"
-                    />
-                  </TabList>
-                </Paper>
-                <TabPanel value="1">
-                  <ProposalTab />
-                </TabPanel>
-              </TabContext>
-            )}
-          </Page>
-        </Router>
-      </ReplenishmentsContext.Provider>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <ReplenishmentsContext.Provider value={replenishments}>
+                <Router>
+                    <Page
+                        title="ContainerMesh"
+                        sessions={sessions}
+                        kuzzleIndex={kuzzleIndex}
+                        setKuzzleIndex={setKuzzleIndex}
+                        stepIndex={stepIndex}
+                        onPlayStep={onPlayStep}
+                        onResetStep={onResetStep}
+                        actor={actor}
+                        onActorChange={onActorChange}
+                    >
+                        {actor.type === STOCK_MANAGER ? (
+                            <TabContext value={tabIndex}>
+                                <Paper square className={classes.root}>
+                                    <TabList
+                                        value={tabIndex}
+                                        onChange={(event, newValue) =>
+                                            setTabIndex(newValue)
+                                        }
+                                    >
+                                        <Tab label="Forecast" value="1" />
+                                        <Tab
+                                            label={
+                                                <Badge
+                                                    badgeContent={
+                                                        replenishments.length
+                                                    }
+                                                    color="error"
+                                                >
+                                                    Supply Management
+                                                </Badge>
+                                            }
+                                            value="2"
+                                        />
+                                    </TabList>
+                                </Paper>
+                                <TabPanel value="1">
+                                    <ForecastTab
+                                        locations={locations}
+                                        stepIndex={stepIndex}
+                                    />
+                                </TabPanel>
+                                <TabPanel value="2">
+                                    <SupplyManagement
+                                        locations={locations}
+                                        replenishments={replenishments}
+                                        events={[...events, ...jitEvents]}
+                                    />
+                                </TabPanel>
+                            </TabContext>
+                        ) : (
+                            <TabContext value={tabIndex}>
+                                <Paper square className={classes.root}>
+                                    <TabList
+                                        value={tabIndex}
+                                        onChange={(event, newValue) =>
+                                            setTabIndex(newValue)
+                                        }
+                                    >
+                                        <Tab
+                                            label="Propose transports"
+                                            value="1"
+                                        />
+                                        <Tab label="Rent container" value="2" />
+                                    </TabList>
+                                </Paper>
+                                <TabPanel value="1">
+                                    <ProposalTab />
+                                </TabPanel>
+                                {/* <TabPanel value="2">
+                                    <RentTab />
+                                </TabPanel> */}
+                            </TabContext>
+                        )}
+                    </Page>
+                </Router>
+            </ReplenishmentsContext.Provider>
+        </ThemeProvider>
+    );
 }
 
 export default App;
