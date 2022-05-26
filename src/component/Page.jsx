@@ -101,7 +101,7 @@ const Page = ({
                         >
                             Start with step 1
                         </Button>
-                        {stepIndex !== 0 ? <Button
+                        {stepIndex !== 0 && stepIndex < 3 ? <Button
                             disabled={stepIndex + 1 === 3 && !canPlayStep3}
                             onClick={onPlayStep}
                             className={classes.playButton}
@@ -112,6 +112,7 @@ const Page = ({
                         </Button> : ''}
                         {stepIndex + 1 <= maxStepIndex &&
                             `Next: ${steps[stepIndex + 1].name}`}
+                        {stepIndex + 1 > maxStepIndex && 'Now sign in as Maersk and rent 25x 20 GP containers'}
                     </span>
                     <span>
                         <FormControl className={classes.formControl}>

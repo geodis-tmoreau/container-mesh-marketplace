@@ -14,6 +14,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Link,
     List,
     ListItem,
     ListItemAvatar,
@@ -127,6 +128,8 @@ const AvailabilityTable = ({}) => {
                     Container booking confirmed
                 </DialogTitle>
                 <DialogContent style={{ width: "30vw", overflowY: "auto" }}>
+                    <span>Now use <strong>Container Check</strong> with your Smartphone to Check-in/Check-out leased containers: </span>
+                    <Link href="https://containercheck.onerecord.fr">https://containercheck.onerecord.fr</Link>
                     {detailsOpen && (
                         <List>
                             {containers.map((container) => {
