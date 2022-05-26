@@ -161,7 +161,7 @@ const Page = ({
                 {...props}
             >
                 {children}
-                <footer style={{color: "gray", position: "fixed", bottom: 0, width: '100%'}}>
+                <footer style={{color: "gray", position: "fixed", bottom: 0, width: '75%'}}>
                     <center style={{ display: "flex", alignItems: "middle", justifyContent: "center"}}>
                         <span style={{paddingTop: "5px", marginRight: "5px"}}>Conceived by</span>
                         <a target="_blank" href="https://geodis.com" style={{marginRight: "1rem"}}><img src="/geodis-mini.png" style={{ width: 73, height: 30}}/></a>
