@@ -15,6 +15,10 @@ class KuzzleService {
         await kuzzle.auth.login("local", credentials);
     }
 
+    async disconnect() {
+        await kuzzle.disconnect();
+    }
+
     setIndex(index) {
         this.index = index;
     }

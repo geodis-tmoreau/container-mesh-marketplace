@@ -160,6 +160,12 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    return async () => {
+      await kuzzleService.disconnect();
+    };
+  }, []);
+
   const classes = makeStyles();
 
   const onPlayStep = () => {
