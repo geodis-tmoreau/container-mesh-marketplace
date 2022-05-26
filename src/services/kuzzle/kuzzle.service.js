@@ -15,6 +15,10 @@ class KuzzleService {
         await kuzzle.auth.login("local", credentials);
     }
 
+    setIndex(index) {
+        this.index = index;
+    }
+
     getLocations() {
         return kuzzle.document.search(this.index, "locations");
     }
@@ -56,21 +60,21 @@ class KuzzleService {
     }
 
     async getCurrentSession() {
-      const { result: currentSession } = await kuzzle.query({
-          controller: "step",
-          action: "getSession",
-      });
+        const { result: currentSession } = await kuzzle.query({
+            controller: "step",
+            action: "getSession",
+        });
 
-      return currentSession;
-  }
+        return currentSession;
+    }
 
-  async startSession(session) {
-    await kuzzle.query({
-        controller: "step",
-        action: "startSession",
-        session
-    });
-}
+    async startSession(session) {
+        await kuzzle.query({
+            controller: "step",
+            action: "startSession",
+            session
+        });
+    }
 
     putProposal(quantity, price) {
         return kuzzle.document.update(

@@ -9,6 +9,7 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
+    TextField,
 } from "@material-ui/core";
 import useLocalStorage from "hooks/useLocalStorage";
 import { useState } from "react";
@@ -130,7 +131,8 @@ const Page = ({
                             </Select>
                         </FormControl>
                         <FormControl className={classes.formControl}>
-                            <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
+                            <TextField disabled id="simulation-dataset" label="Simulation Dataset" value={currentSession} />
+                            {/* <InputLabel id="simulation-dataset-label">Simulation dataset</InputLabel>
                             <Select
                                 value={currentSession}
                                 label="Kuzzle index"
@@ -148,7 +150,7 @@ const Page = ({
                                         {session}
                                     </MenuItem>
                                 ))}
-                            </Select>
+                            </Select> */}
                         </FormControl>
                     </span>
                 </Toolbar>

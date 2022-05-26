@@ -3,7 +3,6 @@ import kuzzle from "./services/kuzzle";
 import { useEffect, useState, useMemo } from "react";
 import Page from "component/Page";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Badge, makeStyles, Paper, Tab } from "@material-ui/core";
@@ -29,7 +28,7 @@ function App() {
   const [canPlayStep3, setCanPlayStep3] = useState(false);
   const [tabIndex, setTabIndex] = useState("1");
   const [locations, setLocations] = useState([]);
-  const [sessions, setSessions] = useState(['geodis1', 'geodis2']);
+  const [sessions, setSessions] = useState([]);
   const [replenishments, setReplenishments] = useState([]);
   const [events, setEvents] = useState([]);
   const [jitEvents, setJitEvents] = useState([]);
@@ -110,12 +109,20 @@ function App() {
       },
     })
   );
-
+  
   useEffect(() => {
     async function init() {
       await kuzzleService.init(kuzzleIndex);
       const availableSessions = await kuzzleService.getSessions();
       setSessions(availableSessions);
+
+      // find first available session, select it and start it
+      const currentSession = availableSessions[0];
+      setCurrentSession(currentSession);
+      setKuzzleIndex(`tenant-sdl-${currentSession}`);
+      kuzzleService.setIndex(kuzzleIndex);
+      window.ses = currentSession;
+      await kuzzleService.startSession(currentSession);
 
       const resultLocations = await kuzzleService.getLocations();
       const resultReplenishments =
@@ -137,12 +144,6 @@ function App() {
       setEvents(resultEvents.hits);
       setJitEvents(resultJitEvents.hits);
 
-      const session = await kuzzleService.getCurrentSession();
-      let selectedSession = session || availableSessions[0];
-      console.log({selectedSession})
-      setCurrentSession(selectedSession);
-      window.ses = selectedSession
-
       await kuzzle.realtime.subscribe(
         kuzzleService.index,
         'replenishments',
@@ -154,7 +155,6 @@ function App() {
         },
         { scope: 'in' })
 
-      await kuzzleService.init(kuzzleIndex);
       setStepIndex(0);
     }
     init();
@@ -180,7 +180,8 @@ function App() {
         return kuzzleService.getCurrentSession();
       })
       .then(session => {
-        setCurrentSession(session)
+        // setCurrentSession(session);
+        // window.ses = session;
       })
       .catch(e => {
         alert(`${e.message}: reload the application to start a new session`)
@@ -195,11 +196,11 @@ function App() {
   const startSession = (session) => {
     kuzzleService.startSession(session)
       .then(() => {
-        setCurrentSession(session);
-        window.ses = session
+        // setCurrentSession(session);
+        // window.ses = session;
       })
       .catch(e => {
-        alert(`${e.message}: reload the application to start a new session`)
+        alert(`${e.message}: reload the application to start a new session (close the browser tab and try again)`)
       })
   }
 
