@@ -11,11 +11,8 @@ import {
     InputLabel,
     TextField,
 } from "@material-ui/core";
-import useLocalStorage from "hooks/useLocalStorage";
-import { useState } from "react";
-import kuzzleService from "services/kuzzle/kuzzle.service";
 import { actors, steps } from "constants";
-import {useTheme} from "@material-ui/styles"
+import {useTheme} from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -163,7 +160,7 @@ const Page = ({
                 {...props}
             >
                 {children}
-                <footer style={{color: "gray", position: "fixed", bottom: 0, width: '75%'}}>
+                <footer style={{color: "gray", position: "fixed", bottom: 0, left: 0, width: "100%"}}>
                     <center style={{ display: "flex", alignItems: "middle", justifyContent: "center"}}>
                         <span style={{paddingTop: "5px", marginRight: "5px"}}>Conceived by</span>
                         <a target="_blank" href="https://geodis.com" style={{marginRight: "1rem"}}><img src="/geodis-mini.png" style={{ width: 73, height: 30}}/></a>
